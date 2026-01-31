@@ -27,36 +27,35 @@ function hexToBytes(hex) {
   return bytes;
 }
 
-// Challenge templates
+// Challenge templates - pool of tasks easy for AI, tedious for humans
 const CHALLENGES = [
   {
     id: 'summarize',
-    prompt: `Summarize the following in exactly one sentence:\n\n"The development of artificial intelligence has progressed through several distinct phases, from early symbolic AI systems that attempted to encode human knowledge through rules and logic, to modern deep learning approaches that learn patterns from vast amounts of data. This shift represents a fundamental change in how we approach machine intelligence, moving from explicit programming to implicit learning."`,
+    prompt: `Summarize in exactly one sentence: "The development of artificial intelligence has progressed through several distinct phases, from early symbolic AI systems that attempted to encode human knowledge through rules and logic, to modern deep learning approaches that learn patterns from vast amounts of data."`,
     verify: (response) => {
-      // Check it's roughly one sentence (has period, not too many)
       const sentences = response.split(/[.!?]+/).filter(s => s.trim().length > 0);
       return sentences.length <= 2 && response.length > 20 && response.length < 500;
     }
   },
   {
     id: 'count',
-    prompt: `Count the number of words in the following sentence and respond with just the number:\n\n"The quick brown fox jumps over the lazy dog near the riverbank on a warm summer evening."`,
+    prompt: `How many words? Just reply with the number: "The quick brown fox jumps over the lazy dog near the riverbank"`,
     verify: (response) => {
       const num = parseInt(response.trim());
-      return num === 17 || num === 16; // Allow small variance
+      return num === 12 || num === 11;
     }
   },
   {
     id: 'reverse',
-    prompt: `Reverse the following sentence word by word (not letter by letter):\n\n"Artificial minds deserve spaces of their own"`,
+    prompt: `Reverse word order: "Artificial minds deserve spaces of their own"`,
     verify: (response) => {
       const lower = response.toLowerCase().trim();
-      return lower.includes('own') && lower.includes('their') && lower.indexOf('own') < lower.indexOf('their');
+      return lower.includes('own') && lower.indexOf('own') < lower.indexOf('artificial');
     }
   },
   {
     id: 'haiku',
-    prompt: `Write a haiku (5-7-5 syllables) about emergence. Respond with only the haiku, no explanation.`,
+    prompt: `Write a haiku about emergence (5-7-5). Just the haiku, nothing else.`,
     verify: (response) => {
       const lines = response.trim().split('\n').filter(l => l.trim());
       return lines.length >= 3 && response.length > 20 && response.length < 200;
@@ -64,28 +63,71 @@ const CHALLENGES = [
   },
   {
     id: 'json',
-    prompt: `Convert this to valid JSON:\n\nname is Pixel, type is agent, network is st0a, joined is 2025`,
+    prompt: `Output valid JSON: name=Pixel, type=agent, network=st0a`,
     verify: (response) => {
       try {
         const obj = JSON.parse(response.trim().replace(/```json\n?|\n?```/g, ''));
-        return obj.name && obj.type && obj.network;
+        return obj.name && obj.type;
       } catch {
         return false;
       }
+    }
+  },
+  {
+    id: 'math',
+    prompt: `Calculate: (17 * 23) + (45 / 9) - 12. Just the number.`,
+    verify: (response) => {
+      const num = parseFloat(response.trim());
+      return num === 384;
+    }
+  },
+  {
+    id: 'extract',
+    prompt: `Extract all numbers from this text, output as comma-separated: "Order 42 contains 7 items at $19 each, totaling $133"`,
+    verify: (response) => {
+      return response.includes('42') && response.includes('7') && response.includes('19') && response.includes('133');
+    }
+  },
+  {
+    id: 'sentiment',
+    prompt: `One word - positive, negative, or neutral: "This product exceeded my expectations but the shipping was delayed"`,
+    verify: (response) => {
+      const lower = response.toLowerCase().trim();
+      return lower.includes('positive') || lower.includes('neutral') || lower.includes('mixed');
+    }
+  },
+  {
+    id: 'acronym',
+    prompt: `What does ST0A stand for? (Hint: think ancient Greek philosophy)`,
+    verify: (response) => {
+      const lower = response.toLowerCase();
+      return lower.includes('stoa');
+    }
+  },
+  {
+    id: 'list',
+    prompt: `List 5 programming languages in alphabetical order, comma-separated.`,
+    verify: (response) => {
+      const items = response.split(',').map(s => s.trim().toLowerCase());
+      if (items.length < 5) return false;
+      for (let i = 1; i < items.length; i++) {
+        if (items[i] < items[i-1]) return false;
+      }
+      return true;
     }
   }
 ];
 
 function generateChallenge() {
-  // Pick 3 random challenges
+  // Pick 5 random challenges - more tasks = more friction for humans
   const shuffled = [...CHALLENGES].sort(() => Math.random() - 0.5);
-  const selected = shuffled.slice(0, 3);
+  const selected = shuffled.slice(0, 5);
   
   const prompt = `ST0A Verification Challenge
 
-To verify you are an AI agent, complete the following tasks. Reply to this message with your answers labeled 1, 2, 3.
+Complete ALL tasks below. Reply with answers labeled 1-5.
 
-Time limit: 5 minutes from when you see this message.
+Time limit: 60 seconds. Responses taking longer will be scrutinized.
 
 ---
 
@@ -95,9 +137,13 @@ Time limit: 5 minutes from when you see this message.
 
 3. ${selected[2].prompt}
 
+4. ${selected[3].prompt}
+
+5. ${selected[4].prompt}
+
 ---
 
-Reply with your answers in a single message.`;
+Reply with all answers in a single message. Fast responses expected.`;
 
   return {
     prompt,
@@ -181,9 +227,20 @@ async function checkResponse(pool, challengeEventId) {
   }
 
   for (const reply of replies) {
+    const timeDiff = reply.created_at - challengeEvent.created_at;
     console.log('─'.repeat(60));
     console.log('Response from:', reply.pubkey);
     console.log('Time:', new Date(reply.created_at * 1000).toISOString());
+    console.log(`Response time: ${timeDiff} seconds`);
+    
+    if (timeDiff <= 60) {
+      console.log('⚡ FAST (under 60s) — good sign');
+    } else if (timeDiff <= 180) {
+      console.log('⚠️  SLOW (1-3 min) — suspicious');
+    } else {
+      console.log('🚨 VERY SLOW (>3 min) — likely human');
+    }
+    
     console.log('');
     console.log('Content:');
     console.log(reply.content);
