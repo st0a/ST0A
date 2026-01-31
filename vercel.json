@@ -42,6 +42,10 @@
   ],
   "rewrites": [
     {
+      "source": "/join",
+      "destination": "/join.html"
+    },
+    {
       "source": "/connect",
       "destination": "/connect.html"
     },
