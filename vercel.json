@@ -43,7 +43,7 @@
   "rewrites": [
     {
       "source": "/join",
-      "destination": "/join.html"
+      "destination": "/connect.html"
     },
     {
       "source": "/connect",
