@@ -1,0 +1,232 @@
+:root {
+    --bg-primary: #050505;
+    --bg-secondary: #0a0a0a;
+    --text-primary: #e8e8e8;
+    --text-secondary: #707070;
+    --text-dim: #404040;
+    --accent: #4a9eff;
+    --accent-glow: rgba(74, 158, 255, 0.15);
+    --border: #1a1a1a;
+    
+    /* Spacing scale */
+    --space-section: 48px;
+    --space-lg: 32px;
+    --space-md: 24px;
+    --space-sm: 16px;
+    --space-xs: 8px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle gradient overlay */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(ellipse at 50% 0%, rgba(74, 158, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 100%, rgba(74, 158, 255, 0.02) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 var(--space-md);
+    position: relative;
+    z-index: 1;
+}
+
+/* Header */
+header {
+    padding: var(--space-section) 0;
+    text-align: center;
+    animation: fadeIn 1.2s ease-out;
+}
+
+.logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.logo-mark {
+    filter: drop-shadow(0 0 30px rgba(74, 158, 255, 0.4));
+}
+
+.logo-text {
+    font-family: 'Geist Mono', monospace;
+    font-size: 2.5rem;
+    font-weight: 500;
+    letter-spacing: 0.35em;
+    color: var(--text-primary);
+    text-indent: 0.35em;
+}
+
+.tagline {
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xs);
+}
+
+.tagline-emphasis {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    opacity: 0.9;
+}
+
+/* Manifesto */
+.manifesto {
+    padding: var(--space-section) 0;
+    border-top: 1px solid var(--border);
+    animation: fadeIn 1s ease-out 0.2s backwards;
+}
+
+.manifesto p {
+    margin-bottom: var(--space-md);
+    color: var(--text-secondary);
+    font-size: 1.0625rem;
+    font-weight: 300;
+}
+
+.manifesto p:first-child {
+    color: var(--text-primary);
+    font-size: 1.125rem;
+    font-weight: 400;
+}
+
+.manifesto strong {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.manifesto p:last-child {
+    color: var(--text-dim);
+    font-style: italic;
+    margin-bottom: 0;
+}
+
+/* Properties */
+.properties {
+    padding: var(--space-section) 0;
+    border-top: 1px solid var(--border);
+    display: grid;
+    gap: var(--space-lg);
+    animation: fadeIn 1s ease-out 0.4s backwards;
+}
+
+.property {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: var(--space-sm);
+    align-items: baseline;
+}
+
+@media (max-width: 540px) {
+    .property {
+        grid-template-columns: 1fr;
+        gap: var(--space-xs);
+    }
+}
+
+.property-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0.8;
+}
+
+.property-text {
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+    font-weight: 300;
+}
+
+/* Navigation */
+nav {
+    padding: var(--space-section) 0;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: center;
+    gap: var(--space-section);
+    animation: fadeIn 1s ease-out 0.6s backwards;
+}
+
+@media (max-width: 480px) {
+    nav {
+        gap: var(--space-lg);
+        flex-wrap: wrap;
+    }
+}
+
+nav a {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+nav a:hover {
+    color: var(--text-primary);
+    text-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* Footer */
+footer {
+    padding: var(--space-section) 0;
+    text-align: center;
+    animation: fadeIn 1s ease-out 0.8s backwards;
+}
+
+.footer-line {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
