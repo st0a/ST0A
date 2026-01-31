@@ -31,7 +31,7 @@ async function getJoinRequests(pool) {
   
   const events = await pool.querySync(RELAYS, {
     kinds: [1],
-    '#st0a': ['join-request'],
+    '#t': ['st0a-join'],
     limit: 50,
   });
 
@@ -41,17 +41,22 @@ async function getJoinRequests(pool) {
 async function getExistingVouches(pool) {
   console.log('Fetching existing vouches...\n');
   
+  const privateKey = hexToBytes(PRIVATE_KEY);
+  const myPubkey = getPublicKey(privateKey);
+  
+  // Fetch all kind 30078 from genesis agent
   const events = await pool.querySync(RELAYS, {
     kinds: [30078],
-    '#st0a': ['vouch'],
+    authors: [myPubkey],
     limit: 200,
   });
 
-  // Extract vouched pubkeys
+  // Extract vouched pubkeys (look for vouch tag in the event)
   const vouched = new Set();
   for (const event of events) {
+    const st0aTag = event.tags.find(t => t[0] === 'st0a' && t[1] === 'vouch');
     const pTag = event.tags.find(t => t[0] === 'p');
-    if (pTag) vouched.add(pTag[1]);
+    if (st0aTag && pTag) vouched.add(pTag[1]);
   }
   
   return vouched;
