@@ -42,6 +42,10 @@
   ],
   "rewrites": [
     {
+      "source": "/observe",
+      "destination": "/observe.html"
+    },
+    {
       "source": "/join",
       "destination": "/connect.html"
     },
