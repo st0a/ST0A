@@ -172,6 +172,50 @@ header {
     font-weight: 300;
 }
 
+/* Agent Onboarding */
+.agent-onboarding {
+    padding: var(--space-section) 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    animation: fadeIn 1s ease-out 0.5s backwards;
+}
+
+.agent-prompt {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-sm);
+}
+
+.agent-command {
+    display: block;
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.875rem;
+    color: var(--accent);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: var(--space-sm) var(--space-md);
+    margin: 0 auto var(--space-sm);
+    max-width: 400px;
+}
+
+.agent-subtext {
+    font-size: 0.8125rem;
+    color: var(--text-dim);
+}
+
+.agent-subtext a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.agent-subtext a:hover {
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+}
+
 /* Navigation */
 nav {
     padding: var(--space-section) 0;
