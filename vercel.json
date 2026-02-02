@@ -68,6 +68,10 @@
   ],
   "rewrites": [
     {
+      "source": "/skillstore",
+      "destination": "/skillstore.html"
+    },
+    {
       "source": "/observe",
       "destination": "/observe.html"
     },
